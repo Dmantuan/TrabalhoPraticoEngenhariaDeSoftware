@@ -18,14 +18,11 @@ public class DadosMediosPresenter implements IPainel {
         
         this.view = new DadosMediosView();
         this.view.setVisible(true);
-        
+        this.view.setLocation(530, 8);
         this.view.getTx_medios_nroRegistros().setText("None");
         this.view.getTx_medios_pressao().setText("None");
         this.view.getTx_medios_temperatura().setText("None");
         this.view.getTx_medios_umidade().setText("None");
-        
-        System.out.println(UltimaAtualizacaoPresenter.getTamanho());
-        //this.view.setLocation(UltimaAtualizacaoPresenter.getTamanho().get(0).intValue() + 8, UltimaAtualizacaoPresenter.getTamanho().get(1).intValue() + 8);
     }
     
     public static DadosMediosPresenter getInstance(){
@@ -45,13 +42,21 @@ public class DadosMediosPresenter implements IPainel {
             this.dadosClima.remove(dadoClima);
         }
         
+        if(this.dadosClima.isEmpty()){
+            this.view.getTx_medios_nroRegistros().setText("");
+            this.view.getTx_medios_pressao().setText("");
+            this.view.getTx_medios_temperatura().setText("");
+            this.view.getTx_medios_umidade().setText("");
+        }
+        else{
+            calculoMediasService.calcularMedias(this.dadosClima);
+
+            this.view.getTx_medios_nroRegistros().setText(String.valueOf(calculoMediasService.getNro_registros()));
+            this.view.getTx_medios_pressao().setText(String.valueOf(calculoMediasService.getMediaPressoes()));
+            this.view.getTx_medios_temperatura().setText(String.valueOf(calculoMediasService.getMediaTemperaturas()));
+            this.view.getTx_medios_umidade().setText(String.valueOf(calculoMediasService.getMediaUmidades()));
+        }
         
-        calculoMediasService.calcularMedias(this.dadosClima);
-        
-        this.view.getTx_medios_nroRegistros().setText(String.valueOf(calculoMediasService.getNro_registros()));
-        this.view.getTx_medios_pressao().setText(String.valueOf(calculoMediasService.getMediaPressoes()));
-        this.view.getTx_medios_temperatura().setText(String.valueOf(calculoMediasService.getMediaTemperaturas()));
-        this.view.getTx_medios_umidade().setText(String.valueOf(calculoMediasService.getMediaUmidades()));
     }
     
     public DadosMediosView getView(){   

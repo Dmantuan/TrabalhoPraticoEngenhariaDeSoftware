@@ -1,77 +1,86 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package services;
 
+import java.time.LocalDate;
 import java.util.List;
 import models.DadoClima;
+import models.MaxMinModel;
 
-/**
- *
- * @author daniel
- */
 public class CalculoMaxMinService {
     
-    private float maxTemperatura;
-    private float maxUmidade;
-    private float maxPressao;
-    private float minTemperatura;
-    private float minUmidade;
-    private float minPressao;
+    private final MaxMinModel maxTemperatura;
+    private final MaxMinModel maxUmidade;
+    private final MaxMinModel maxPressao;
+    private final MaxMinModel minTemperatura;
+    private final MaxMinModel minUmidade;
+    private final MaxMinModel minPressao;
+    
+    public CalculoMaxMinService(){
+        this.maxTemperatura = new MaxMinModel("maxTemperatura", Float.NEGATIVE_INFINITY, LocalDate.now());
+        this.maxUmidade = new MaxMinModel("maxUmidade", Float.NEGATIVE_INFINITY, LocalDate.now());
+        this.maxPressao = new MaxMinModel("maxPressao", Float.NEGATIVE_INFINITY, LocalDate.now());
+        this.minTemperatura = new MaxMinModel("minTemperatura", Float.NEGATIVE_INFINITY, LocalDate.now());
+        this.minUmidade = new MaxMinModel("minUmidade", Float.NEGATIVE_INFINITY, LocalDate.now());
+        this.minPressao = new MaxMinModel("minPressao", Float.NEGATIVE_INFINITY, LocalDate.now());
+    }
     
     
     public void calcular(List<DadoClima> dadosClima){
-        this.maxTemperatura = Float.NEGATIVE_INFINITY;
-        this.maxUmidade = Float.NEGATIVE_INFINITY;
-        this.maxPressao = Float.NEGATIVE_INFINITY;
-        this.minTemperatura = Float.POSITIVE_INFINITY;
-        this.minUmidade = Float.POSITIVE_INFINITY;
-        this.minPressao = Float.POSITIVE_INFINITY;
+        this.maxTemperatura.setValor(Float.NEGATIVE_INFINITY);
+        this.maxUmidade.setValor(Float.NEGATIVE_INFINITY);
+        this.maxPressao.setValor(Float.NEGATIVE_INFINITY);
+        this.minTemperatura.setValor(Float.POSITIVE_INFINITY);
+        this.minUmidade.setValor(Float.POSITIVE_INFINITY);
+        this.minPressao.setValor(Float.POSITIVE_INFINITY);
         
         for (DadoClima dadoClima : dadosClima) {
-            if (maxTemperatura < dadoClima.getTemperatura()) {
-                maxTemperatura = dadoClima.getTemperatura();
+            if (maxTemperatura.getValor() < dadoClima.getTemperatura()) {
+                maxTemperatura.setValor(dadoClima.getTemperatura());
+                maxTemperatura.setDataMedicao(dadoClima.getData());
             }
-            if (minTemperatura > dadoClima.getTemperatura()) {
-                minTemperatura = dadoClima.getTemperatura();
+            if (minTemperatura.getValor() > dadoClima.getTemperatura()) {
+                minTemperatura.setValor(dadoClima.getTemperatura());
+                minTemperatura.setDataMedicao(dadoClima.getData());
             }
-            if (maxUmidade < dadoClima.getUmidade()) {
-                maxUmidade = dadoClima.getUmidade();
+            if (maxUmidade.getValor() < dadoClima.getUmidade()) {
+                maxUmidade.setValor(dadoClima.getUmidade());
+                maxUmidade.setDataMedicao(dadoClima.getData());
             }
-            if (minUmidade > dadoClima.getUmidade()) {
-                minUmidade = dadoClima.getUmidade();
+            if (minUmidade.getValor() > dadoClima.getUmidade()) {
+                minUmidade.setValor(dadoClima.getUmidade());
+                minUmidade.setDataMedicao(dadoClima.getData());
             }
-            if (maxPressao < dadoClima.getPressao()) {
-                maxPressao = dadoClima.getPressao();
+            if (maxPressao.getValor() < dadoClima.getPressao()) {
+                maxPressao.setValor(dadoClima.getPressao());
+                maxPressao.setDataMedicao(dadoClima.getData());
             }
-            if (minPressao > dadoClima.getPressao()) {
-                minPressao = dadoClima.getPressao();
+            if (minPressao.getValor() > dadoClima.getPressao()) {
+                minPressao.setValor(dadoClima.getPressao());
+                minPressao.setDataMedicao(dadoClima.getData());
             }
         }
     }
 
-    public float getMaxTemperatura() {
+    public MaxMinModel getMaxTemperatura() {
         return maxTemperatura;
     }
 
-    public float getMaxUmidade() {
+    public MaxMinModel getMaxUmidade() {
         return maxUmidade;
     }
 
-    public float getMaxPressao() {
+    public  MaxMinModel getMaxPressao() {
         return maxPressao;
     }
 
-    public float getMinTemperatura() {
+    public  MaxMinModel getMinTemperatura() {
         return minTemperatura;
     }
 
-    public float getMinUmidade() {
+    public  MaxMinModel getMinUmidade() {
         return minUmidade;
     }
 
-    public float getMinPressao() {
+    public  MaxMinModel getMinPressao() {
         return minPressao;
     }
 }

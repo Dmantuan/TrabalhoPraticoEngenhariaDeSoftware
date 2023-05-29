@@ -1,12 +1,9 @@
 package presenter;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFrame;
 import models.DadoClima;
 import view.MainView;
 import models.EstacaoClimatica;
@@ -22,12 +19,6 @@ public class MainPresenter implements IPainel{
         MainPresenter.view = new MainView();
         
         this.dadosClima = new ArrayList();
-        
-//        MainPresenter.view.setResizable(false);
-//        MainPresenter.view.setExtendedState(JFrame.MAXIMIZED_BOTH);
-//
-//        GraphicsDevice graphicsDevice = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-//        graphicsDevice.setFullScreenWindow(MainPresenter.view);
     }
     
     public static MainPresenter getInstance(){

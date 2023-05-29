@@ -10,6 +10,8 @@ import javax.swing.table.DefaultTableModel;
 import models.DadoClima;
 import models.EstacaoClimatica;
 import models.Log;
+import services.localDate.FormatadorLocalDate;
+import services.log.GerenciadorLog;
 import view.RegistrosView;
 
 public class RegistrosPresenter implements IPainel {
@@ -52,7 +54,7 @@ public class RegistrosPresenter implements IPainel {
     public static RegistrosPresenter getInstance(){
         if(RegistrosPresenter.instance == null){
             RegistrosPresenter.instance = new RegistrosPresenter();
-        }
+        } 
         return RegistrosPresenter.instance;
     }
     
@@ -71,7 +73,7 @@ public class RegistrosPresenter implements IPainel {
     
     public void logRemover(String operacao){
         Log log = new Log(operacao);
-        System.out.println(log);
+        GerenciadorLog.salvarLog(ConfiguracaoPresenter.getTipoLog(), log);
     }
     
     @Override
@@ -85,15 +87,16 @@ public class RegistrosPresenter implements IPainel {
 
         this.tbClima.setNumRows(0);
         
+        LocalDate dataFormated;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate dataFormated; 
  
         for(DadoClima dadoAux : this.dadosClima){
-            dataFormated = LocalDate.parse(dadoAux.getData().format(formatter), formatter);
-            this.tbClima.addRow(new Object[]{dataFormated.format(formatter), 
+            dataFormated = FormatadorLocalDate.formatar(dadoAux.getData().format(formatter));
+            this.tbClima.addRow(new Object[]{
+                dataFormated.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), 
                 String.valueOf(dadoAux.getTemperatura()), 
                 String.valueOf(dadoAux.getUmidade()), 
-                String.valueOf(dadoAux.getUmidade())
+                String.valueOf(dadoAux.getPressao())
             });
         }
         

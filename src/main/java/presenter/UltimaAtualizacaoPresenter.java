@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import models.DadoClima;
+import services.localDate.FormatadorLocalDate;
 import view.UltimaAtualizacaoView;
 
 
@@ -16,6 +17,7 @@ public class UltimaAtualizacaoPresenter implements IPainel {
     
     private UltimaAtualizacaoPresenter(){
         UltimaAtualizacaoPresenter.view = new UltimaAtualizacaoView();
+        
         this.dadosClima = new ArrayList<>();
         
         UltimaAtualizacaoPresenter.view.getTx_atualizacao_Data().setText("");
@@ -55,7 +57,7 @@ public class UltimaAtualizacaoPresenter implements IPainel {
             DadoClima auxDadoClima = this.dadosClima.get(this.dadosClima.size()-1);
             
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDate dataFormated = LocalDate.parse(auxDadoClima.getData().format(formatter), formatter);
+            LocalDate dataFormated = FormatadorLocalDate.formatar(auxDadoClima.getData().format(formatter));
 
             UltimaAtualizacaoPresenter.view.getTx_atualizacao_Data().setText(dataFormated.format(formatter));
             UltimaAtualizacaoPresenter.view.getTx_atualizacao_Pressao().setText(String.valueOf(auxDadoClima.getPressao()));
@@ -69,10 +71,4 @@ public class UltimaAtualizacaoPresenter implements IPainel {
         return UltimaAtualizacaoPresenter.view;
     }
     
-    protected static ArrayList<Double>  getTamanho(){
-        ArrayList<Double> point = new ArrayList<>();
-        point.add(UltimaAtualizacaoPresenter.view.getLocation().getX() + UltimaAtualizacaoPresenter.view.getWidth());
-        point.add(UltimaAtualizacaoPresenter.view.getLocation().getY() + UltimaAtualizacaoPresenter.view.getHeight());
-        return point;
-    }
 }

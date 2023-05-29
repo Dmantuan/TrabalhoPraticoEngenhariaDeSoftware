@@ -3,17 +3,19 @@ package presenter;
 import models.DadoClima;
 import view.MaxMinView;
 import java.util.ArrayList;
-import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 import services.CalculoMaxMinService;
+import org.jfree.chart.labels.CategoryItemLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.data.category.CategoryDataset;
 
 public class MaxMinPresenter implements IPainel {
     private Integer secondPainel = 0;
-    private LocalDate dataMedicao;
     private CalculoMaxMinService calcularMaxMin;
     private ArrayList<DadoClima> dadosClima;
     private static MaxMinPresenter instance;
@@ -23,6 +25,8 @@ public class MaxMinPresenter implements IPainel {
         this.dadosClima = new ArrayList<>();
         this.calcularMaxMin = new CalculoMaxMinService();
         this.view = new MaxMinView();
+        
+        this.view.setLocation(430, 180);
         
         this.view.setVisible(true);
     }
@@ -44,25 +48,24 @@ public class MaxMinPresenter implements IPainel {
         }
         this.calcularMaxMin.calcular(dadosClima);
         
-        dataMedicao = LocalDate.now();
         exibirMaximasMinimas();
         }
     
     public void exibirMaximasMinimas() {     
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         if (secondPainel == 0) {
-            // Adicionar os dados do estacaoClimatica aos datasets
-            dataset.addValue(calcularMaxMin.getMaxTemperatura(), "Temperatura máxima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMinTemperatura(), "Temperatura mínima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMaxUmidade(), "Umidade máxima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMinUmidade(), "Umidade mínima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMaxPressao(), "Pressão máxima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMinPressao(), "Pressão mínima", dataMedicao);
+            
+            dataset.addValue(calcularMaxMin.getMaxTemperatura().getValor(), "máxima", "Temperatura");
+            dataset.addValue(calcularMaxMin.getMinTemperatura().getValor(), "mínima","Temperatura");
+            dataset.addValue(calcularMaxMin.getMaxUmidade().getValor(), "máxima", "Umidade");
+            dataset.addValue(calcularMaxMin.getMinUmidade().getValor(), "mínima", "Umidade");
+            dataset.addValue(calcularMaxMin.getMaxPressao().getValor(), "máxima", "Pressão");
+            dataset.addValue(calcularMaxMin.getMinPressao().getValor(), "mínima", "Pressão");
 
             // Criação do gráfico de barras
             JFreeChart chart = ChartFactory.createBarChart(
                     "Gráfico de Barras", // Título do gráfico
-                    "Data", // Rótulo do eixo x
+                    " ", // Rótulo do eixo x
                     "Valor", // Rótulo do eixo y
                     dataset, // Conjunto de dados
                     PlotOrientation.VERTICAL, // Orientação do gráfico
@@ -70,27 +73,70 @@ public class MaxMinPresenter implements IPainel {
                     true, // Exibir dicas de valores
                     false // Não exibir URLs
             );
+            
+            // OPICIONAL CODIGO
+            // Obtém a referência para o enredo do gráfico
+            CategoryPlot plot = chart.getCategoryPlot();
+            // Define o intervalo mínimo e máximo para o eixo Y
+            double minYValue = 0;  // Valor mínimo desejado
+            double maxYValue = Math.max(calcularMaxMin.getMaxTemperatura().getValor(), 
+                    Math.max(calcularMaxMin.getMinTemperatura().getValor(), 
+                    Math.max(calcularMaxMin.getMaxUmidade().getValor(), 
+                    Math.max(calcularMaxMin.getMinUmidade().getValor(),
+                    Math.max( calcularMaxMin.getMaxPressao().getValor(), calcularMaxMin.getMinPressao().getValor())))));
+            plot.getRangeAxis().setRange(minYValue, maxYValue + 20);
+            // FIM DO CODIGO OPICIONAL
+
+            CategoryItemLabelGenerator generator = new CategoryItemLabelGenerator() {
+                @Override
+                public String generateLabel(CategoryDataset dataset, int row, int column) {
+                    if (row == 0)
+                        return String.valueOf(calcularMaxMin.getMaxTemperatura().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    else if(row == 1)
+                        return String.valueOf(calcularMaxMin.getMinTemperatura().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    if (row == 2)
+                        return String.valueOf(calcularMaxMin.getMaxUmidade().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    else if(row == 3)
+                        return String.valueOf(calcularMaxMin.getMinUmidade().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    if (row == 4)
+                        return String.valueOf(calcularMaxMin.getMaxPressao().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    else
+                        return String.valueOf(calcularMaxMin.getMinPressao().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                }
+
+                @Override
+                public String generateRowLabel(CategoryDataset cd, int i) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                public String generateColumnLabel(CategoryDataset cd, int i) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+            };
+            chart.getCategoryPlot().getRenderer().setBaseItemLabelGenerator(generator);
+            chart.getCategoryPlot().getRenderer().setBaseItemLabelsVisible(true);
 
             // Criação do ChartPanel e configurações
             ChartPanel chartPanel = new ChartPanel(chart);
             chartPanel.setPreferredSize(new java.awt.Dimension(400, 300));
-            
+
             this.view.setContentPane(chartPanel);
             
             secondPainel = 1;
         }
         else {
-            dataset.addValue(calcularMaxMin.getMaxTemperatura(), "Temperatura máxima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMinTemperatura(), "Temperatura mínima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMaxUmidade(), "Umidade máxima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMinUmidade(), "Umidade mínima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMaxPressao(), "Pressão máxima", dataMedicao);
-            dataset.addValue(calcularMaxMin.getMinPressao(), "Pressão mínima", dataMedicao);
+            dataset.addValue(calcularMaxMin.getMaxTemperatura().getValor(), "máxima", "Temperatura");
+            dataset.addValue(calcularMaxMin.getMinTemperatura().getValor(), "mínima","Temperatura");
+            dataset.addValue(calcularMaxMin.getMaxUmidade().getValor(), "máxima", "Umidade");
+            dataset.addValue(calcularMaxMin.getMinUmidade().getValor(), "mínima", "Umidade");
+            dataset.addValue(calcularMaxMin.getMaxPressao().getValor(), "máxima", "Pressão");
+            dataset.addValue(calcularMaxMin.getMinPressao().getValor(), "mínima", "Pressão");
 
             // Criação do gráfico de barras
             JFreeChart chart = ChartFactory.createBarChart(
                     "Gráfico de Barras", // Título do gráfico
-                    "Data", // Rótulo do eixo x
+                    " ", // Rótulo do eixo x
                     "Valor", // Rótulo do eixo y
                     dataset, // Conjunto de dados
                     PlotOrientation.VERTICAL, // Orientação do gráfico
@@ -99,10 +145,41 @@ public class MaxMinPresenter implements IPainel {
                     false // Não exibir URLs
             );
             
-            // Atualizar o ChartPanel existente no JFrame interno
-            ChartPanel chartPanel = new ChartPanel(chart);
-            this.view.setContentPane(chartPanel);
+            CategoryItemLabelGenerator generator = new CategoryItemLabelGenerator() {
+                @Override
+                public String generateLabel(CategoryDataset dataset, int row, int column) {
+                    if (row == 0)
+                        return String.valueOf(calcularMaxMin.getMaxTemperatura().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    else if(row == 1)
+                        return String.valueOf(calcularMaxMin.getMinTemperatura().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    if (row == 2)
+                        return String.valueOf(calcularMaxMin.getMaxUmidade().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    else if(row == 3)
+                        return String.valueOf(calcularMaxMin.getMinUmidade().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    if (row == 4)
+                        return String.valueOf(calcularMaxMin.getMaxPressao().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                    else
+                        return String.valueOf(calcularMaxMin.getMinPressao().getDataMedicao().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+                }
 
+                @Override
+                public String generateRowLabel(CategoryDataset cd, int i) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+
+                @Override
+                public String generateColumnLabel(CategoryDataset cd, int i) {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+            };
+            chart.getCategoryPlot().getRenderer().setBaseItemLabelGenerator(generator);
+            chart.getCategoryPlot().getRenderer().setBaseItemLabelsVisible(true);
+
+            // Criação do ChartPanel e configurações
+            ChartPanel chartPanel = new ChartPanel(chart);
+            chartPanel.setPreferredSize(new java.awt.Dimension(400, 300));
+
+            this.view.setContentPane(chartPanel);
         }
     }
     
